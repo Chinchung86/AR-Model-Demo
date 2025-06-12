@@ -2,6 +2,8 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <!-- This meta tag is essential to ensure mobile devices use the device's width -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>AR/3D Model Demo</title>
     <!-- Google model-viewer CDN -->
     <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
@@ -9,7 +11,6 @@
     <!-- QRious library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
     <style>
-      /* Ensure the page uses full viewport dimensions */
       html,
       body {
         margin: 0;
@@ -17,22 +18,23 @@
         width: 100vw;
         height: 100vh;
       }
-      
+
       /* Desktop styles: side-by-side layout */
       @media (min-width: 768px) {
         .container {
           display: flex;
+          flex-direction: row;
           width: 100vw;
           height: 100vh;
         }
-  
+
         /* Model-viewer occupies left half */
         model-viewer {
           width: 50vw;
           height: 100vh;
           background: #f0f0f0;
         }
-  
+
         /* QR container occupies right half and centers its content */
         .qr-side {
           width: 50vw;
@@ -42,12 +44,12 @@
           justify-content: center;
           align-items: center;
         }
-  
+
         #qr-label {
           margin-bottom: 10px;
         }
       }
-  
+
       /* Mobile styles: vertical stacking */
       @media (max-width: 767px) {
         .container {
@@ -56,15 +58,15 @@
           width: 100vw;
           height: 100vh;
         }
-  
-        /* Model-viewer takes the top half */
+
+        /* Model-viewer takes the top half (full width, 50% height) */
         model-viewer {
           width: 100vw;
           height: 50vh;
           background: #f0f0f0;
         }
-  
-        /* QR container takes the bottom half */
+
+        /* QR container takes the bottom half (full width, 50% height) */
         .qr-side {
           width: 100vw;
           height: 50vh;
@@ -91,14 +93,14 @@
         shadow-intensity="1"
         exposure="1"
       ></model-viewer>
-  
+
       <!-- QR Code Container -->
       <div class="qr-side" id="qr-container">
         <p id="qr-label">Scan this QR code on your mobile device for AR:</p>
         <canvas id="qr-code"></canvas>
       </div>
     </div>
-  
+
     <script>
       // Helper function to detect mobile devices
       function isMobileDevice() {
@@ -106,16 +108,16 @@
           navigator.userAgent
         );
       }
-  
+
       // URL for AR experience: the current page URL
       const arUrl = window.location.href;
-  
+
+      // On mobile, hide the QR code container so the AR experience starts immediately.
       if (isMobileDevice()) {
-        // On mobile, hide the QR code container so that the AR experience triggers directly.
         document.getElementById("qr-container").style.display = "none";
       } else {
-        // On desktop, generate and display the QR code linking to the AR-enabled page.
-        const qr = new QRious({
+        // On desktop, generate the QR code linking to the AR-enabled page.
+        new QRious({
           element: document.getElementById("qr-code"),
           value: arUrl,
           size: 200,

@@ -4,61 +4,113 @@
     <meta charset="UTF-8" />
     <title>AR/3D Model Demo</title>
     <!-- Load model-viewer from Google CDN -->
-    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
-    <script nomodule src="https://unpkg.com/@google/model-viewer/dist/model-viewer-legacy.js"></script>
+    <script
+      type="module"
+      src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"
+    ></script>
+    <script
+      nomodule
+      src="https://unpkg.com/@google/model-viewer/dist/model-viewer-legacy.js"
+    ></script>
     <!-- QRious library for QR code generation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
     <style>
+      /* General body reset */
       body {
         margin: 0;
         font-family: sans-serif;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding: 20px;
+        height: 100vh;
       }
-      model-viewer {
-        width: 600px;
-        height: 400px;
-        background: #f0f0f0;
+
+      /* Desktop styles: make it a side-by-side layout */
+      @media (min-width: 768px) {
+        .container {
+          display: flex;
+          height: 100%;
+        }
+
+        /* The model-viewer occupies the left 50% of the screen spanning full height */
+        model-viewer {
+          width: 50%;
+          height: 100%;
+          background: #f0f0f0;
+          object-fit: contain; /* Keeps model aspect ratio */
+        }
+
+        /* QR side container fills the right 50%, center aligned */
+        .qr-side {
+          width: 50%;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+        }
+
+        /* Hide the label since you might want just the QR in the middle */
+        #qr-label {
+          margin-bottom: 10px;
+        }
       }
-      #qr-container {
-        margin-top: 20px;
-        text-align: center;
-      }
-      #qr-code {
-        margin-top: 10px;
-        display: none; /* Hidden on mobile */
+
+      /* Mobile styles: stack as a column */
+      @media (max-width: 767px) {
+        .container {
+          display: flex;
+          flex-direction: column;
+          height: 100%;
+        }
+
+        /* Model-viewer on the top half (full width, half height) */
+        model-viewer {
+          width: 100%;
+          height: 50%;
+          background: #f0f0f0;
+          object-fit: contain;
+        }
+
+        /* QR container on the bottom half */
+        .qr-side {
+          width: 100%;
+          height: 50%;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+        }
       }
     </style>
   </head>
   <body>
-    <h1>3D Model &amp; AR Demo</h1>
+    <!-- Container for desktop/mobile layout -->
+    <div class="container">
+      <!-- Model viewer -->
+      <model-viewer
+        id="modelViewer"
+        src="https://raw.githubusercontent.com/Chinchung86/AR-Model-Demo/main/Sedia_Tommy_Grigio.glb"
+        alt="Sedia Tommy Grigio 3D model demo"
+        auto-rotate
+        camera-controls
+        ar
+        ar-modes="scene-viewer quick-look"
+        ar-scale="auto"
+        shadow-intensity="1"
+        exposure="1"
+      >
+      </model-viewer>
 
-    <!-- model-viewer element using the processed GitHub raw model link -->
-    <model-viewer
-      id="modelViewer"
-      src="https://raw.githubusercontent.com/Chinchung86/AR-Model-Demo/main/Sedia_Tommy_Grigio.glb"
-      alt="Sedia Tommy Grigio 3D model demo"
-      auto-rotate
-      camera-controls
-      ar
-      ar-modes="scene-viewer quick-look"
-      ar-scale="auto"
-      shadow-intensity="1"
-      exposure="1">
-    </model-viewer>
-
-    <!-- QR Code container for desktop users -->
-    <div id="qr-container">
-      <p id="qr-label">Scan this QR code on your mobile device for AR:</p>
-      <canvas id="qr-code"></canvas>
+      <!-- QR Code container -->
+      <div class="qr-side" id="qr-container">
+        <p id="qr-label">Scan this QR code on your mobile device for AR:</p>
+        <canvas id="qr-code"></canvas>
+      </div>
     </div>
 
     <script>
       // Helper function to detect mobile devices
       function isMobileDevice() {
-        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+          navigator.userAgent
+        );
       }
 
       // URL for AR experience: the current page URL
@@ -68,13 +120,12 @@
         // On mobile, hide the QR code container so that the AR experience triggers directly.
         document.getElementById("qr-container").style.display = "none";
       } else {
-        // On desktop, generate and display the QR code that links to the AR-enabled page.
+        // Generate and display the QR code that links to the AR-enabled page.
         const qr = new QRious({
           element: document.getElementById("qr-code"),
           value: arUrl,
           size: 200,
         });
-        document.getElementById("qr-code").style.display = "block";
       }
     </script>
   </body>

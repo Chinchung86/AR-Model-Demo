@@ -2,134 +2,163 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <!-- Essential for mobile device scaling -->
+    <!-- Ensure mobile devices scale the page correctly -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>AR/3D Model Demo</title>
-    <!-- Load Google model-viewer libraries -->
+    <!-- Google model-viewer libraries -->
     <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
     <script nomodule src="https://unpkg.com/@google/model-viewer/dist/model-viewer-legacy.js"></script>
-    <!-- QRious library for generating QR codes -->
+    <!-- QRious library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
     <style>
-      /* Basic resets and layout */
       html,
       body {
         margin: 0;
         padding: 0;
-        font-family: sans-serif;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
+        width: 100vw;
         height: 100vh;
-        background: #fafafa;
       }
-      
-      h1 {
-        margin: 20px 0;
+
+      /* Desktop styles: side-by-side layout */
+      @media (min-width: 768px) {
+        .container {
+          display: flex;
+          flex-direction: row;
+          width: 100vw;
+          height: 100vh;
+        }
+        /* Model-viewer occupies left half */
+        model-viewer {
+          width: 50vw;
+          height: 100vh;
+          background: #f0f0f0;
+        }
+        /* QR container occupies right half and centers its content */
+        .qr-side {
+          width: 50vw;
+          height: 100vh;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+        }
+        #qr-label {
+          margin-bottom: 10px;
+        }
+        /* Hide the custom AR button on desktop */
+        button[slot="ar-button"].custom-ar-button {
+          display: none;
+        }
       }
-      
-      model-viewer {
-        width: 600px;
-        height: 400px;
-        background: #f0f0f0;
-        position: relative; /* Needed for absolute positioning of custom AR button */
-        border: 1px solid #ccc;
-      }
-      
-      /* Custom AR Button */
-      button[slot="ar-button"].custom-ar-button {
-        position: absolute;
-        bottom: 10px;
-        right: 10px;
-        display: flex;
-        align-items: center;
-        padding: 8px 12px;
-        background-color: #007aff;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-      }
-      
-      button[slot="ar-button"].custom-ar-button:hover {
-        background-color: #005fcc;
-      }
-      
-      /* Style for the icon element */
-      .custom-ar-button .ar-icon {
-        width: 24px;
-        height: 24px;
-        margin-right: 8px;
-      }
-      .custom-ar-button .ar-icon svg {
-        width: 100%;
-        height: 100%;
-        fill: #fff;
-      }
-      
-      /* Style for the text next to icon */
-      .custom-ar-button .ar-text {
-        color: #fff;
-        font-size: 14px;
-        font-weight: bold;
-      }
-      
-      /* Desktop QR code container */
-      #qr-container {
-        margin-top: 20px;
-        text-align: center;
+
+      /* Mobile styles: vertical stacking & custom AR button visible */
+      @media (max-width: 767px) {
+        .container {
+          display: flex;
+          flex-direction: column;
+          width: 100vw;
+          height: 100vh;
+        }
+        /* Model-viewer takes the top half (full width, 50% height) */
+        model-viewer {
+          width: 100vw;
+          height: 50vh;
+          background: #f0f0f0;
+        }
+        /* QR container takes the bottom half (full width, 50% height) */
+        .qr-side {
+          width: 100vw;
+          height: 50vh;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+        }
+        /* Show the custom AR button on mobile */
+        button[slot="ar-button"].custom-ar-button {
+          display: flex;
+          align-items: center;
+          position: absolute;
+          bottom: 10px;
+          right: 10px;
+          padding: 8px 12px;
+          background-color: #007aff;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+          transition: background-color 0.3s ease;
+        }
+        button[slot="ar-button"].custom-ar-button:hover {
+          background-color: #005fcc;
+        }
+        /* Icon styling regarding the AR button */
+        .custom-ar-button .ar-icon {
+          width: 24px;
+          height: 24px;
+          margin-right: 8px;
+        }
+        .custom-ar-button .ar-icon svg {
+          width: 100%;
+          height: 100%;
+          fill: #fff;
+        }
+        .custom-ar-button .ar-text {
+          color: #fff;
+          font-size: 14px;
+          font-weight: bold;
+        }
       }
     </style>
   </head>
   <body>
-    <h1>3D Model &amp; AR Demo</h1>
-    <model-viewer
-      id="modelViewer"
-      src="https://raw.githubusercontent.com/Chinchung86/AR-Model-Demo/main/Sedia_Tommy_Grigio.glb"
-      alt="Sedia Tommy Grigio 3D model demo"
-      auto-rotate
-      camera-controls
-      ar
-      ar-modes="scene-viewer quick-look"
-      ar-scale="auto"
-      shadow-intensity="1"
-      exposure="1"
-    >
-      <!-- 
-        Custom AR button:
-        This preserves the default icon (via a placeholder SVG) and adds the "View in AR" text.
-      -->
-      <button slot="ar-button" class="custom-ar-button">
-        <span class="ar-icon">
-          <!-- Placeholder SVG icon. Replace with exact asset if desired. -->
-          <svg viewBox="0 0 24 24">
-            <path d="M12 2a10 10 0 1 0 10 10A10.0114 10.0114 0 0 0 12 2Zm1 15h-2v-2h2Zm0-4h-2V7h2Z"></path>
-          </svg>
-        </span>
-        <span class="ar-text">View in AR</span>
-      </button>
-    </model-viewer>
-    
-    <!-- QR Code container for desktop users -->
-    <div id="qr-container">
-      <p>Scan this QR code on your mobile device for AR:</p>
-      <canvas id="qr-code"></canvas>
+    <div class="container">
+      <!-- Model Viewer displaying the 3D model -->
+      <model-viewer
+        id="modelViewer"
+        src="https://raw.githubusercontent.com/Chinchung86/AR-Model-Demo/main/Sedia_Tommy_Grigio.glb"
+        alt="Sedia Tommy Grigio 3D model demo"
+        auto-rotate
+        camera-controls
+        ar
+        ar-modes="scene-viewer quick-look"
+        ar-scale="auto"
+        shadow-intensity="1"
+        exposure="1"
+      >
+        <!-- Custom AR Button, only visible on mobile.
+             It preserves the default icon (using a placeholder SVG) and adds "View in AR" text to its right. -->
+        <button slot="ar-button" class="custom-ar-button">
+          <span class="ar-icon">
+            <!-- Placeholder SVG icon; replace with the actual default icon if desired -->
+            <svg viewBox="0 0 24 24">
+              <path d="M12 2a10 10 0 1 0 10 10A10.0114 10.0114 0 0 0 12 2Zm1 15h-2v-2h2Zm0-4h-2V7h2Z"></path>
+            </svg>
+          </span>
+          <span class="ar-text">View in AR</span>
+        </button>
+      </model-viewer>
+
+      <!-- QR Code Container, only used on desktop -->
+      <div class="qr-side" id="qr-container">
+        <p id="qr-label">Scan this QR code on your mobile device for AR:</p>
+        <canvas id="qr-code"></canvas>
+      </div>
     </div>
-    
+
     <script>
       // Helper function to detect mobile devices
       function isMobileDevice() {
         return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
       }
-      
-      // The URL for the AR experience is the current page
+
+      // URL for AR experience: the current page URL
       const arUrl = window.location.href;
-      
+
       if (isMobileDevice()) {
-        // Hide the QR container on mobile so that the AR experience launches directly
+        // On mobile, hide the QR container so that the AR experience launches immediately.
         document.getElementById("qr-container").style.display = "none";
       } else {
-        // Generate a QR code on desktop that links to this AR-enabled page
+        // On desktop, generate the QR code linking to the AR-enabled page.
         new QRious({
           element: document.getElementById("qr-code"),
           value: arUrl,

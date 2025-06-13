@@ -32,6 +32,13 @@
           width: 50vw;
           height: 100vh;
           background: #f0f0f0;
+          /* Default drop-shadow simulating a “hard” contact shadow */
+          filter: drop-shadow(0px 5px 5px rgba(0,0,0,0.5));
+          transition: filter 0.3s ease;
+        }
+        /* When object-union is enabled, the drop-shadow is softened */
+        model-viewer.object-union-active {
+          filter: drop-shadow(0px 8px 12px rgba(0,0,0,0.3));
         }
         /* QR container occupies right half and centers its content */
         .qr-side {
@@ -45,13 +52,14 @@
         #qr-label {
           margin-bottom: 10px;
         }
-        /* Hide the custom AR button on desktop */
-        button[slot="ar-button"].custom-ar-button {
+        /* Hide the custom AR and object-union buttons on desktop */
+        button[slot="ar-button"].custom-ar-button,
+        #objectUnionToggle {
           display: none;
         }
       }
 
-      /* Mobile styles: vertical stacking & custom AR button visible */
+      /* Mobile styles: vertical stacking & custom AR and object-union button visible */
       @media (max-width: 767px) {
         .container {
           display: flex;
@@ -64,6 +72,11 @@
           width: 100vw;
           height: 50vh;
           background: #f0f0f0;
+          filter: drop-shadow(0px 5px 5px rgba(0,0,0,0.5));
+          transition: filter 0.3s ease;
+        }
+        model-viewer.object-union-active {
+          filter: drop-shadow(0px 8px 12px rgba(0,0,0,0.3));
         }
         /* QR container takes the bottom half (full width, 50% height) */
         .qr-side {
@@ -107,12 +120,30 @@
           font-size: 14px;
           font-weight: bold;
         }
+        /* New “Unione dell’oggetto” button */
+        #objectUnionToggle {
+          position: absolute;
+          bottom: 10px;
+          left: 10px;
+          padding: 8px 12px;
+          background-color: #28a745;
+          border: none;
+          border-radius: 4px;
+          color: #fff;
+          font-size: 14px;
+          font-weight: bold;
+          cursor: pointer;
+          transition: background-color 0.3s ease;
+        }
+        #objectUnionToggle:hover {
+          background-color: #218838;
+        }
       }
     </style>
   </head>
   <body>
     <div class="container">
-      <!-- Model Viewer displaying the 3D model -->
+      <!-- Model Viewer displaying the 3D model with WebXR prioritized -->
       <model-viewer
         id="modelViewer"
         src="https://raw.githubusercontent.com/Chinchung86/AR-Model-Demo/main/Sedia_Tommy_Grigio.glb"
@@ -120,16 +151,14 @@
         auto-rotate
         camera-controls
         ar
-        ar-modes="scene-viewer quick-look"
+        ar-modes="webxr quick-look scene-viewer"
         ar-scale="auto"
         shadow-intensity="1"
         exposure="1"
       >
-        <!-- Custom AR Button, only visible on mobile.
-             It preserves the default icon (using a placeholder SVG) and adds "View in AR" text to its right. -->
+        <!-- Custom AR Button, only visible on mobile. -->
         <button slot="ar-button" class="custom-ar-button">
           <span class="ar-icon">
-            <!-- Placeholder SVG icon; replace with the actual default icon if desired -->
             <svg viewBox="0 0 24 24">
               <path d="M12 2a10 10 0 1 0 10 10A10.0114 10.0114 0 0 0 12 2Zm1 15h-2v-2h2Zm0-4h-2V7h2Z"></path>
             </svg>
@@ -143,6 +172,9 @@
         <p id="qr-label">Scan this QR code on your mobile device for AR:</p>
         <canvas id="qr-code"></canvas>
       </div>
+
+      <!-- "Unione dell'oggetto" Toggle Button (visible only on mobile) -->
+      <button id="objectUnionToggle">Attiva Unione dell'oggetto</button>
     </div>
 
     <script>
@@ -165,6 +197,22 @@
           size: 200,
         });
       }
+
+      // Toggle "Unione dell'oggetto" effect on <model-viewer>
+      const unionToggle = document.getElementById("objectUnionToggle");
+      const modelViewer = document.getElementById("modelViewer");
+
+      unionToggle.addEventListener("click", function() {
+        if (modelViewer.classList.contains("object-union-active")) {
+          // Remove the effect: revert to default (harder) shadow
+          modelViewer.classList.remove("object-union-active");
+          unionToggle.textContent = "Attiva Unione dell'oggetto";
+        } else {
+          // Apply a softer shadow effect simulating a feathered contact transition
+          modelViewer.classList.add("object-union-active");
+          unionToggle.textContent = "Disattiva Unione dell'oggetto";
+        }
+      });
     </script>
   </body>
 </html>
